@@ -29,7 +29,7 @@ public class Producer implements Runnable {
 
     private double produce() throws InterruptedException {
         synchronized (sharedQueue) { // обязательно synchronized
-            if (sharedQueue.size() == maxSize) {
+            if (sharedQueue.size() >= maxSize) {
                 // Если очередь полна, то ждём
                 System.out.println("Producer waiting...");
                 // освобождает монитор и переводит вызывающий поток в состояние ожидания до тех пор,
