@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PhoneBook {
     private static final DateTimeFormatter CHANGE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -122,57 +123,34 @@ public class PhoneBook {
     public void findContactsByName() {
         System.out.println("Введите часть ФИО: ");
         String name = scan.nextLine();
-        List<Contact> foundContacts = new ArrayList<>();
-        for (Contact c : contacts) {
-            if (c.getName().contains(name)) {
-                foundContacts.add(c);
-            }
-        }
+        List<Contact> foundContacts = contacts.stream()
+                .filter(contact -> contact.getName().contains(name))
+                .collect(Collectors.toList());
         printContacts(foundContacts);
     }
 
     public void findContactsByPhone() {
         System.out.println("Введите часть номера телефона: ");
         String phonePart = scan.nextLine();
-        List<Contact> foundContacts = new ArrayList<>();
-        for (Contact c : contacts) {
-            for (String number : c.getPhoneNumbers()) {
-                if (number.contains(phonePart)) {
-                    foundContacts.add(c);
-                    break;
-                }
-            }
-        }
+        List<Contact> foundContacts = contacts.stream()
+                .filter(contact -> contact.getPhoneNumbers().stream()
+                        .anyMatch(number -> number.contains(phonePart))
+                ).collect(Collectors.toList());
         printContacts(foundContacts);
     }
 
     public void sortByIdAndPrint() {
-        contacts.sort(new Comparator<Contact>() {
-            @Override
-            public int compare(Contact c1, Contact c2) {
-                return Integer.compare(c1.getId(), c2.getId());
-            }
-        });
+        contacts.sort(Comparator.comparingInt(Contact::getId));
         printContacts(contacts);
     }
 
     public void sortByNameAndPrint() {
-        contacts.sort(new Comparator<Contact>() {
-            @Override
-            public int compare(Contact c1, Contact c2) {
-                return c1.getName().compareTo(c2.getName());
-            }
-        });
+        contacts.sort(Comparator.comparing(Contact::getName));
         printContacts(contacts);
     }
 
     public void sortByChangeDateAndPrint() {
-        contacts.sort(new Comparator<Contact>() {
-            @Override
-            public int compare(Contact c1, Contact c2) {
-                return c1.getChangeTime().compareTo(c2.getChangeTime());
-            }
-        }.reversed());
+        contacts.sort(Comparator.comparing(Contact::getChangeTime).reversed());
         printContacts(contacts);
     }
 
